@@ -1,5 +1,6 @@
 <template>
   <div class="d-flex content-center min-vh-100">
+    <loader :active="loading.processing" :text="loading.text" />
     <CContainer fluid>
       <CRow class="justify-content-center">
         <CCol md="6">
@@ -65,7 +66,7 @@
               <h1 style="padding: 20px">CHỌN HỆ THỐNG</h1>
               <div class="row">
                 <div class="col-sm-6 col-md-4">
-                  <div class="card text-white bg-gradient-danger box-switch">
+                  <div class="card text-white bg-gradient-danger box-switch" @click="loginCRM">
                     <div class="card-body ">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-school"></i></div>
                       <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
@@ -76,7 +77,7 @@
                 </div>
 
                 <div class="col-sm-6 col-md-4">
-                  <div class="card text-white bg-gradient-success box-switch">
+                  <div class="card text-white bg-gradient-success box-switch"  @click="loginLeads">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-phone-volume"></i></div>
                       <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
@@ -96,6 +97,7 @@
                     </div>
                   </div>
                 </div>
+                <p style="color:red;text-align: center;width:100%" v-html="message_error"></p>
               </div>
             </CCardBody>
           </CCard>
@@ -107,39 +109,55 @@
 
 <script>
 import axios from "axios";
-
+import u from "../../utilities/utility";
+import loader from "../../components/Loading";
 export default {
-  name: "Login",
+  name: "Switch",
+  components: {
+    loader: loader,
+  },
   data() {
     return {
       email: "",
       password: "",
       showMessage: false,
       message: "",
-    };
+      loading: {
+        text: "Đang xử lý dữ liệu...",
+        processing: false,
+      },
+      message_error:"",
+    };   
   },
   methods: {
-    goRegister() {
-      this.$router.push({ path: "register" });
+    loginCRM() {
+      this.loading.processing = true;
+      u.g("/api/users/login/crm")
+        .then((response) => {
+          if (response.data.status == 1) {
+            window.location.href =  response.data.link_redirect;
+          }else{
+            this.loading.processing = false;
+            this.message_error = response.data.message
+          }
+        })
+        .catch((e) => {
+          u.processAuthen(e);
+        });
     },
-    login() {
-      let self = this;
-      axios
-        .post("/api/login", {
-          email: self.email,
-          password: self.password,
+    loginLeads(){
+      this.loading.processing = true;
+      u.g("/api/users/login/leads")
+        .then((response) => {
+          if (response.data.status == 1) {
+            window.location.href =  response.data.link_redirect;
+          }else{
+            this.loading.processing = false;
+            this.message_error = response.data.message
+          }
         })
-        .then(function (response) {
-          self.email = "";
-          self.password = "";
-          localStorage.setItem("api_token", response.data.access_token);
-          localStorage.setItem("roles", response.data.roles);
-          self.$router.push({ path: "dashboard" });
-        })
-        .catch(function (error) {
-          self.message = "Incorrect E-mail or password";
-          self.showMessage = true;
-          console.log(error);
+        .catch((e) => {
+          u.processAuthen(e);
         });
     },
   },

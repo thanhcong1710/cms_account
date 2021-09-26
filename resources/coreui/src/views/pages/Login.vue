@@ -45,19 +45,19 @@
                 <h1>Login</h1>
                 <p class="text-muted">Sign In to your account</p>
                 <CInput
-                  v-model="email"
+                  v-model="hrm_id"
                   prependHtml="<i class='cui-user'></i>"
-                  placeholder="Username"
-                  autocomplete="username email"
+                  placeholder="Mã Nhân Viên"
+                  autocomplete="Mã Nhân Viên"
                 >
                   <template #prepend-content><CIcon name="cil-user"/></template>
                 </CInput>
                 <CInput
                   v-model="password"
                   prependHtml="<i class='cui-lock-locked'></i>"
-                  placeholder="Password"
+                  placeholder="Mật Khẩu"
                   type="password"
-                  autocomplete="curent-password"
+                  autocomplete="Mật Khẩu"
                 >
                   <template #prepend-content><CIcon name="cil-lock-locked"/></template>
                 </CInput>
@@ -87,7 +87,7 @@ import axios from "axios";
       name: 'Login',
       data() {
         return {
-          email: '',
+          hrm_id: '',
           password: '',
           showMessage: false,
           message: '',
@@ -100,10 +100,10 @@ import axios from "axios";
         login() {
           let self = this;
           axios.post(  '/api/login', {
-            email: self.email,
+            hrm_id: self.hrm_id,
             password: self.password,
           }).then(function (response) {
-            self.email = '';
+            self.hrm_id = '';
             self.password = '';
             localStorage.setItem("api_token", response.data.access_token);
             localStorage.setItem('roles', response.data.roles);

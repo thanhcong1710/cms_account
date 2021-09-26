@@ -20,12 +20,16 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('register', 'AuthController@register'); 
+    Route::post('single-sign-on', 'AuthController@singleSignOn');
+    Route::get('logout-single-sign-on', 'AuthController@logoutSingleSignOn');
 
     Route::group(['middleware' => 'admin'], function ($router) {
         Route::resource('users', 'UsersController')->except( ['create', 'store'] );
         Route::post('/users/add', 'UsersController@add');
         Route::post('/users/list', 'UsersController@list');
         Route::post('/users/update/{id}', 'UsersController@update');
+        Route::get('/users/login/crm', 'UsersController@loginCRM');
+        Route::get('/users/login/leads', 'UsersController@loginLeads');
 
         Route::prefix('menu/menu')->group(function () { 
             Route::get('/',         'MenuEditController@index')->name('menu.menu.index');
@@ -70,27 +74,6 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
         Route::get('/language/{language}', 'LangController@setLanguage');
-        Route::post('/parents/list', 'ParentsController@list');
-        Route::post('/parents/add', 'ParentsController@add');
-        Route::post('/parents/update/{parent_id}', 'ParentsController@update');
-        Route::get('/parents/detail/{parent_id}', 'ParentsController@detail');
-        Route::post('/parents/assign', 'ParentsController@assign');
-        Route::get('/parents/show/{parent_id}', 'ParentsController@show');
-        Route::get('/parents/get_logs/{parent_id}', 'ParentsController@getLogs');
-        Route::get('/provinces', 'SystemInfoController@getAllProvices');
-        Route::get('/provinces/{province_id}/districts', 'SystemInfoController@getDistrictsByProvice');
-        Route::get('/jobs', 'SystemInfoController@getAllJobs');
-        Route::get('/sources', 'SystemInfoController@getAllSources');
-        Route::get('/methods', 'SystemInfoController@getAllMethods');
-        Route::get('get/{province_id}/{district_id}/{school_level}/schools', 'SystemInfoController@getSchools');
-        Route::post('/care/add', 'ParentCareController@add');
-        Route::get('/care/get_all_data/{parent_id}', 'ParentCareController@getAllDataByParent');
-        Route::post('/students/add', 'StudentsController@add');
-        Route::get('/students/get_all_data/{parent_id}', 'StudentsController@getAllDataByParent');
-        Route::post('/imports/list', 'ImportsController@list');
-        Route::post('/imports/upload', 'ImportsController@upload');
-        Route::post('/imports/assign', 'ImportsController@assign');
-        Route::get('/user/get-users-manager', 'UsersController@getUserAssgin');
         
     });
 });

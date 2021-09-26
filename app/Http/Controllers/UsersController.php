@@ -189,4 +189,38 @@ class UsersController extends Controller
         $data = u::makingPagination($list, $total->total, $page, $limit);
         return response()->json($data);
     }
+    public function loginCRM(Request $request){
+        $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='crm' AND s.status=1 AND s.user_id=".$request->user()->id);
+        $key ="CMS@abcd1234";
+        if($user_info){
+            $data = (object)array(
+                'status'=>1,
+                'message'=>'',
+                'link_redirect'=>"http://crm.cltechpro.com/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+            );
+        }else{
+            $data = (object)array(
+                'status'=>0,
+                'message'=>'Bạn không có quyền truy cập hệ thống vận hành CMS',
+            );
+        }
+        return response()->json($data);
+    }
+    public function loginLeads(Request $request){
+        $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='leads' AND s.status=1 AND s.user_id=".$request->user()->id);
+        $key ="CMS@abcd1234";
+        if($user_info){
+            $data = (object)array(
+                'status'=>1,
+                'message'=>'',
+                'link_redirect'=>"http://crm.cltechpro.com/#/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+            );
+        }else{
+            $data = (object)array(
+                'status'=>0,
+                'message'=>'Bạn không có quyền truy cập hệ thống chăm sóc khách hàng CMS',
+            );
+        }
+        return response()->json($data);
+    }
 }

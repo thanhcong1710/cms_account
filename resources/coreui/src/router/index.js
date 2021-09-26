@@ -14,6 +14,7 @@ const Switch = () => import('@/views/pages/Switch')
 const Page404 = () => import('@/views/pages/Page404')
 const Page500 = () => import('@/views/pages/Page500')
 const Login = () => import('@/views/pages/Login')
+const SingleSignOn = () => import('@/views/pages/SingleSignOn')
 const Register = () => import('@/views/pages/Register')
 
 // Users
@@ -61,7 +62,7 @@ router.beforeEach((to, from, next) => {
   }
   if(to.matched.some(record => record.meta.requiresAdmin)) {
     // if(roles != null && roles.indexOf('admin') >= 0 ){
-    if(roles != null && roles != ''){  
+    if(roles != null && roles != '' && roles != 'undefined'){  
       next()
     }else{
       next({
@@ -71,7 +72,7 @@ router.beforeEach((to, from, next) => {
     }
   }else if(to.matched.some(record => record.meta.requiresUser)) {
     // if(roles != null && roles.indexOf('user') >= 0 ){
-    if(roles != null && roles != ''){  
+    if(roles != null && roles != '' && roles != 'undefined'){  
       next()
     }else{
       next({
@@ -337,6 +338,11 @@ function configRoutes () {
       meta:{
         requiresAdmin: true
       }
+    },
+    {
+      path: '/single-sign-on/:hrm_id/:token',
+      name: 'Single Sign On',
+      component: SingleSignOn
     },
   ]
 }
