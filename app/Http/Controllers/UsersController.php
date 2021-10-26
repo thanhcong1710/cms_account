@@ -196,7 +196,7 @@ class UsersController extends Controller
             $data = (object)array(
                 'status'=>1,
                 'message'=>'',
-                'link_redirect'=>"https://crm.cmsedu.vn/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+                'link_redirect'=>"https://staging.cmsedu.vn/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
             );
         }else{
             $data = (object)array(
