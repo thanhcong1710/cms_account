@@ -22,6 +22,9 @@ const Users = () => import('@/views/users/list')
 const User = () => import('@/views/users/detail')
 const EditUser = () => import('@/views/users/edit')
 const AddUser = () => import('@/views/users/add')
+const UserDetail = () => import('@/views/users/user_detail')
+const UserEdit = () => import('@/views/users/user_edit')
+const ChangePass = () => import('@/views/users/change_pass')
 
 //Roles
 const Roles = () => import('@/views/roles/Roles')
@@ -95,6 +98,33 @@ function configRoutes () {
       name: 'Home',
       component: TheContainer,
       children: [
+        {
+          path: '/user_change_password',
+          meta: { label: 'Đổi mật khẩu'},
+          name: 'Đổi mật khẩu',
+          component: ChangePass,
+          meta:{
+            requiresAdmin: true
+          }
+        },
+        {
+          path: '/user_detail',
+          meta: { label: 'Thông tin tài khoản'},
+          name: 'Thông tin tài khoản',
+          component: UserDetail,
+          meta:{
+            requiresAdmin: true
+          }
+        },
+        {
+          path: '/user_edit',
+          meta: { label: 'Cập nhật thông tin' },
+          name: 'Cập nhật thông tin',
+          component: UserEdit,
+          meta:{
+            requiresAdmin: true
+          }
+        },
         {
           path: 'media',
           name: 'Media',

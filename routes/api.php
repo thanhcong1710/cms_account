@@ -30,6 +30,9 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::post('/users/update/{id}', 'UsersController@update');
         Route::get('/users/login/crm', 'UsersController@loginCRM');
         Route::get('/users/login/leads', 'UsersController@loginLeads');
+        Route::get('/get_user_info', 'UsersController@getUserInfo');
+        Route::post('/update_user_info', 'UsersController@updateUserInfo');
+        Route::post('/user_change_password', 'UsersController@userChangePassword');
 
         Route::prefix('menu/menu')->group(function () { 
             Route::get('/',         'MenuEditController@index')->name('menu.menu.index');

@@ -87,7 +87,8 @@
                   </div>
                 </div>
 
-                <div class="col-sm-6 col-md-4">
+                <div class="col-sm-6 col-md-4"> 
+                  <router-link :to="`/user_detail`">
                   <div class="card text-white bg-gradient-primary box-switch">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-user-alt"></i></div>
@@ -96,6 +97,7 @@
                       >
                     </div>
                   </div>
+                  </router-link>
                 </div>
                 <p style="color:red;text-align: center;width:100%" v-html="message_error"></p>
               </div>

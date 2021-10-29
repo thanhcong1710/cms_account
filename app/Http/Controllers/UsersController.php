@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Providers\UtilityServiceProvider as u;
 use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -219,6 +220,36 @@ class UsersController extends Controller
             $data = (object)array(
                 'status'=>0,
                 'message'=>'Bạn không có quyền truy cập hệ thống chăm sóc khách hàng CMS',
+            );
+        }
+        return response()->json($data);
+    }
+    public function getUserInfo(Request $request){
+        $data = u::first("SELECT * FROM users WHERE id =".(int)$request->user()->id);
+        return response()->json($data);
+    }
+    public function updateUserInfo(Request $request){
+        $data = u::updateSimpleRow(array(
+            'name'=>$request->name,
+            'phone'=>$request->phone,
+            'email'=>$request->email,
+        ),array('id'=>(int)$request->user()->id),'users');
+        return response()->json($data);
+    }
+    public function userChangePassword(Request $request){
+        $user = u::first("SELECT * FROM users WHERE id =".(int)$request->user()->id);
+        if(Hash::check($request->curr_pass, $user->password)) {
+            $data = u::updateSimpleRow(array(
+                'password' => Hash::make($request->pass)
+            ),array('id'=>(int)$request->user()->id),'users');
+            $data = (object)array(
+                'status'=>1,
+                'message'=>""
+            );
+        }else{
+            $data = (object)array(
+                'status'=>0,
+                'message'=>"Mật khẩu cũ không chính xác"
             );
         }
         return response()->json($data);
