@@ -47,6 +47,13 @@
                 >
                   <i class="fas fa-undo-alt"></i> Reset
                 </button>
+                <button
+                  class="btn btn-warning"
+                  type="reset"
+                  @click="sync()"
+                >
+                  <i class="fa fa-sync-alt"></i> Đồng bộ dữ liệu
+                </button>
               </div>
             </div>
             <table class="table table-striped table-hover">
@@ -59,7 +66,8 @@
                   <th>Ngày tạo</th>
                   <th>Vai trò</th>
                   <th>Người quản lý</th>
-                  <th>Trạng thái</th>
+                  <th>CRM</th>
+                  <th>Lead</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
@@ -74,7 +82,8 @@
                   <td>{{ item.created_at }}</td>
                   <td>{{ item.menuroles }}</td>
                   <td>{{ item.manager_name }}</td>
-                  <td><CBadge :color="getBadge(item.status)">{{ getTitleStatus(item.status) }}</CBadge></td>
+                  <td><span v-if="item.crm_status==1"><i class="fas fa-check"></i></span><span v-else><i class="fas fa-times"></i></span></td>
+                  <td><span v-if="item.leads_status==1"><i class="fas fa-check"></i></span><span v-else><i class="fas fa-times"></i></span></td>
                   <td>
                     <router-link
                       class="btn btn-sm btn-success"
@@ -205,6 +214,7 @@ export default {
         keyword: this.searchData.keyword,
         status: this.searchData.status,
         role_id: this.searchData.role_id,
+        pagination: this.pagination,
       };
       const link = "/api/users/list";
 
@@ -237,6 +247,13 @@ export default {
     exit() {
       this.modal.show = false;
     },
+    sync(){
+      this.loading.processing = true;
+      u.g('/api/users_sync').then((response) => {
+          this.loading.processing = false;
+          this.search();
+        }).catch((e) => {});
+    }
   },
   filters: {
     getStatusName(value) {

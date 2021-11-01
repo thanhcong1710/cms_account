@@ -185,7 +185,9 @@ class UsersController extends Controller
             $cond .= " AND (u.name LIKE '%$keyword%' OR u.hrm_id LIKE '%$keyword%' ) ";
         }
         $total = u::first("SELECT count(id) AS total FROM users AS u WHERE $cond ");
-        $list = u::query("SELECT u.*, (SELECT name FROM users WHERE id=u.manager_id) AS manager_name 
+        $list = u::query("SELECT u.*, (SELECT name FROM users WHERE id=u.manager_id) AS manager_name ,
+            (SELECT status FROM user_system WHERE user_id=u.id AND system='crm') AS crm_status,
+            (SELECT status FROM user_system WHERE user_id=u.id AND system='leads') AS leads_status
             FROM users AS u WHERE $cond ORDER BY u.id DESC $limitation");
         $data = u::makingPagination($list, $total->total, $page, $limit);
         return response()->json($data);
@@ -253,5 +255,108 @@ class UsersController extends Controller
             );
         }
         return response()->json($data);
+    }
+    public function sync(){
+        //CRM
+        u::query("DELETE FROM tmp_users");
+        $connection = DB::connection('mysql_crm');
+        $list_user_crm = $connection->select(
+            DB::raw("SELECT u.full_name, u.email, u.phone, u.hrm_id, u.superior_id, u.`status`,
+                    (SELECT b.name FROM term_user_branch AS t LEFT JOIN branches AS b ON b.id=t.branch_id WHERE t.status=1 LIMIT 1) AS branch_name 
+                FROM users AS u"));
+        $sql_insert = "INSERT INTO tmp_users (name,phone,email,hrm_id,manager_hrm_id,branch_name,status,type) VALUES ";
+        foreach($list_user_crm AS $row){
+            $sql_insert.="('$row->full_name','$row->phone','$row->email','$row->hrm_id','$row->superior_id','$row->branch_name','$row->status','crm'),";
+        }
+        $sql_insert = substr($sql_insert, 0, -1);
+        u::query($sql_insert);
+
+        u::query("UPDATE tmp_users AS t LEFT JOIN users AS u ON u.hrm_id=t.hrm_id SET is_duplicate =1 WHERE u.id IS NOT NULL");
+        $list_insert_users = u::query("SELECT * FROM tmp_users WHERE is_duplicate=0");
+
+        if(!empty($list_insert_users)){
+            $created_at = date('Y-m-d H:i:s');
+            $password = Hash::make('@12345678');
+            $sql_insert_users = "INSERT INTO users (name,phone,email,password,menuroles,branch_name,hrm_id,manager_hrm_id,status,created_at) VALUES ";
+            foreach($list_insert_users AS $row){
+                $sql_insert_users.="('$row->name','$row->phone','$row->email','$password','users','$row->branch_name','$row->hrm_id','$row->manager_hrm_id',1,'$created_at'),";
+            }
+            $sql_insert_users = substr($sql_insert_users, 0, -1);
+            u::query($sql_insert_users);
+            
+            $list_users = u::query("SELECT u.id FROM users AS u LEFT JOIN model_has_roles AS m ON u.id=m.model_id WHERE m.role_id IS NULL");
+            if(!empty($list_users)){
+                $sql_insert_model_has_roles = "INSERT INTO model_has_roles (role_id,model_type,model_id) VALUES ";
+                foreach($list_users AS $row){
+                    $sql_insert_model_has_roles.="(2,'App\User','$row->id'),";
+                }
+                $sql_insert_model_has_roles = substr($sql_insert_model_has_roles, 0, -1);
+                u::query($sql_insert_model_has_roles);
+            }
+
+            $list_users = u::query("SELECT u.id FROM users AS u LEFT JOIN user_system AS m ON u.id=m.user_id WHERE m.id IS NULL");
+            if(!empty($list_users)){
+                $sql_insert_user_system = "INSERT INTO user_system (user_id,system,status) VALUES ";
+                foreach($list_users AS $row){
+                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),";
+                }
+                $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
+                u::query($sql_insert_user_system);
+            }
+            u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
+                LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
+                WHERE t.id IS NOT NULL");
+        }
+
+        //Lead
+        u::query("DELETE FROM tmp_users");
+        $connection = DB::connection('mysql_lead');
+        $list_user_crm = $connection->select(DB::raw("SELECT u.name, u.email, u.phone, u.hrm_id, u.manager_hrm_id, u.`status`,u.branch_name 
+                FROM users AS u"));
+        $sql_insert = "INSERT INTO tmp_users (name,phone,email,hrm_id,manager_hrm_id,branch_name,status,type) VALUES ";
+        foreach($list_user_crm AS $row){
+            $sql_insert.="('$row->name','$row->phone','$row->email','$row->hrm_id','$row->manager_hrm_id','$row->branch_name','$row->status','leads'),";
+        }
+        $sql_insert = substr($sql_insert, 0, -1);
+        u::query($sql_insert);
+
+        u::query("UPDATE tmp_users AS t LEFT JOIN users AS u ON u.hrm_id=t.hrm_id SET is_duplicate =1 WHERE u.id IS NOT NULL");
+        $list_insert_users = u::query("SELECT * FROM tmp_users WHERE is_duplicate=0");
+
+        if(!empty($list_insert_users)){
+            $created_at = date('Y-m-d H:i:s');
+            $password = Hash::make('@12345678');
+            $sql_insert_users = "INSERT INTO users (name,phone,email,password,menuroles,branch_name,hrm_id,manager_hrm_id,status,created_at) VALUES ";
+            foreach($list_insert_users AS $row){
+                $sql_insert_users.="('$row->name','$row->phone','$row->email','$password','user','$row->branch_name','$row->hrm_id','$row->manager_hrm_id',1,'$created_at'),";
+            }
+            $sql_insert_users = substr($sql_insert_users, 0, -1);
+            u::query($sql_insert_users);
+            
+            $list_users = u::query("SELECT u.id FROM users AS u LEFT JOIN model_has_roles AS m ON u.id=m.model_id WHERE m.role_id IS NULL");
+            if(!empty($list_users)){
+                $sql_insert_model_has_roles = "INSERT INTO model_has_roles (role_id,model_type,model_id) VALUES ";
+                foreach($list_users AS $row){
+                    $sql_insert_model_has_roles.="(2,'App\User','$row->id'),";
+                }
+                $sql_insert_model_has_roles = substr($sql_insert_model_has_roles, 0, -1);
+                u::query($sql_insert_model_has_roles);
+            }
+
+            $list_users = u::query("SELECT u.id FROM users AS u LEFT JOIN user_system AS m ON u.id=m.user_id WHERE m.id IS NULL");
+            if(!empty($list_users)){
+                $sql_insert_user_system = "INSERT INTO user_system (user_id,system,status) VALUES ";
+                foreach($list_users AS $row){
+                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),";
+                }
+                $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
+                u::query($sql_insert_user_system);
+            }
+            u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
+                LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
+                WHERE t.id IS NOT NULL");
+        }
+        u::updateSimpleRow(array('model_type'=>'App\User'),array('role_id'=>2),'model_has_roles');
+        return "ok";
     }
 }
