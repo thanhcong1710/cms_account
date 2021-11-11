@@ -107,7 +107,11 @@ import axios from "axios";
             self.password = '';
             localStorage.setItem("api_token", response.data.access_token);
             localStorage.setItem('roles', response.data.roles);
-            self.$router.push({ path: 'switch' });
+            if(response.data.change_password==0){
+              self.$router.push({ path: '/user_change_password' });
+            }else{
+              self.$router.push({ path: '/switch' });
+            }
           })
           .catch(function (error) {
             self.message = 'Incorrect E-mail or password';

@@ -187,7 +187,7 @@ class UsersController extends Controller
         $total = u::first("SELECT count(id) AS total FROM users AS u WHERE $cond ");
         $list = u::query("SELECT u.*, (SELECT name FROM users WHERE id=u.manager_id) AS manager_name ,
             (SELECT status FROM user_system WHERE user_id=u.id AND system='crm') AS crm_status,
-            (SELECT status FROM user_system WHERE user_id=u.id AND system='leads') AS leads_status
+            (SELECT status FROM user_system WHERE user_id=u.id AND system='leads') AS leads_status, u.role_name AS menuroles
             FROM users AS u WHERE $cond ORDER BY u.id DESC $limitation");
         $data = u::makingPagination($list, $total->total, $page, $limit);
         return response()->json($data);
@@ -242,7 +242,8 @@ class UsersController extends Controller
         $user = u::first("SELECT * FROM users WHERE id =".(int)$request->user()->id);
         if(Hash::check($request->curr_pass, $user->password)) {
             $data = u::updateSimpleRow(array(
-                'password' => Hash::make($request->pass)
+                'password' => Hash::make($request->pass),
+                'change_password'=>1
             ),array('id'=>(int)$request->user()->id),'users');
             $data = (object)array(
                 'status'=>1,
@@ -262,11 +263,12 @@ class UsersController extends Controller
         $connection = DB::connection('mysql_crm');
         $list_user_crm = $connection->select(
             DB::raw("SELECT u.full_name, u.email, u.phone, u.hrm_id, u.superior_id, u.`status`,
-                    (SELECT b.name FROM term_user_branch AS t LEFT JOIN branches AS b ON b.id=t.branch_id WHERE t.status=1 LIMIT 1) AS branch_name 
+                    (SELECT b.name FROM term_user_branch AS t LEFT JOIN branches AS b ON b.id=t.branch_id WHERE t.status=1 AND t.user_id=u.id LIMIT 1) AS branch_name ,
+                    (SELECT r.name FROM term_user_branch AS t LEFT JOIN roles AS r ON r.id=t.role_id WHERE t.status=1 AND t.user_id=u.id LIMIT 1) AS role_name
                 FROM users AS u"));
-        $sql_insert = "INSERT INTO tmp_users (name,phone,email,hrm_id,manager_hrm_id,branch_name,status,type) VALUES ";
+        $sql_insert = "INSERT INTO tmp_users (name,phone,email,hrm_id,manager_hrm_id,branch_name,status,type,role_name) VALUES ";
         foreach($list_user_crm AS $row){
-            $sql_insert.="('$row->full_name','$row->phone','$row->email','$row->hrm_id','$row->superior_id','$row->branch_name','$row->status','crm'),";
+            $sql_insert.="('$row->full_name','$row->phone','$row->email','$row->hrm_id','$row->superior_id','$row->branch_name','$row->status','crm','$row->role_name'),";
         }
         $sql_insert = substr($sql_insert, 0, -1);
         u::query($sql_insert);
@@ -277,9 +279,9 @@ class UsersController extends Controller
         if(!empty($list_insert_users)){
             $created_at = date('Y-m-d H:i:s');
             $password = Hash::make('@12345678');
-            $sql_insert_users = "INSERT INTO users (name,phone,email,password,menuroles,branch_name,hrm_id,manager_hrm_id,status,created_at) VALUES ";
+            $sql_insert_users = "INSERT INTO users (name,phone,email,password,menuroles,branch_name,hrm_id,manager_hrm_id,status,created_at,role_name) VALUES ";
             foreach($list_insert_users AS $row){
-                $sql_insert_users.="('$row->name','$row->phone','$row->email','$password','users','$row->branch_name','$row->hrm_id','$row->manager_hrm_id',1,'$created_at'),";
+                $sql_insert_users.="('$row->name','$row->phone','$row->email','$password','users','$row->branch_name','$row->hrm_id','$row->manager_hrm_id',1,'$created_at','$row->role_name'),";
             }
             $sql_insert_users = substr($sql_insert_users, 0, -1);
             u::query($sql_insert_users);
@@ -303,10 +305,11 @@ class UsersController extends Controller
                 $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
                 u::query($sql_insert_user_system);
             }
-            u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
-                LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
-                WHERE t.id IS NOT NULL");
         }
+        u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
+            LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) 
+            SET s.status=t.status, u.name = t.name, u.phone=t.phone, u.email=t.email, u.manager_hrm_id =t.manager_hrm_id, u.branch_name = t.branch_name,u.role_name=t.role_name
+            WHERE t.id IS NOT NULL");
 
         //Lead
         u::query("DELETE FROM tmp_users");
@@ -352,11 +355,14 @@ class UsersController extends Controller
                 $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
                 u::query($sql_insert_user_system);
             }
-            u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
-                LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
-                WHERE t.id IS NOT NULL");
         }
+
+        u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
+            LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
+            WHERE t.id IS NOT NULL");
         u::updateSimpleRow(array('model_type'=>'App\User'),array('role_id'=>2),'model_has_roles');
+        //update manager_id
+        u::query("UPDATE users AS u LEFT JOIN users AS m ON m.hrm_id=u.manager_hrm_id SET u.manager_id=m.id");
         return "ok";
     }
 }
