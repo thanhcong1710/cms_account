@@ -132,7 +132,6 @@
 import axios from "axios";
 import u from "../../utilities/utility";
 import loader from "../../components/Loading";
-import Editor from "@tinymce/tinymce-vue";
 import datepicker from "vue2-datepicker";
 import moment from 'moment';
 import select from 'vue-select'
@@ -140,7 +139,6 @@ import select from 'vue-select'
 export default {
   components: {
     loader: loader,
-    editor: Editor,
     datepicker,
     "vue-select": select
   },
