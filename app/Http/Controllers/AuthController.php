@@ -69,12 +69,6 @@ class AuthController extends Controller
 
         return $this->respondWithToken($token, $user_info->email);
     }
-
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function logout()
     {
         auth()->logout();
