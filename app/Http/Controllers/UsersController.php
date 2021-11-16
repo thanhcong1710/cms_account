@@ -196,10 +196,15 @@ class UsersController extends Controller
         $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='crm' AND s.status=1 AND s.user_id=".$request->user()->id);
         $key ="CMS@abcd1234";
         if($user_info){
+            if(env('APP_ENV', 'staging')=='production'){
+                $tmp_link = 'https://crm.cmsedu.vn/single-sign-on/';
+            }else{
+                $tmp_link = 'https://staging.cmsedu.vn/single-sign-on/';
+            }
             $data = (object)array(
                 'status'=>1,
                 'message'=>'',
-                'link_redirect'=>"https://staging.cmsedu.vn/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+                'link_redirect'=>$tmp_link.$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
             );
         }else{
             $data = (object)array(
@@ -213,10 +218,15 @@ class UsersController extends Controller
         $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='leads' AND s.status=1 AND s.user_id=".$request->user()->id);
         $key ="CMS@abcd1234";
         if($user_info){
+            if(env('APP_ENV', 'staging')=='production'){
+                $tmp_link = 'https://lead.cmsedu.vn/#/single-sign-on/';
+            }else{
+                $tmp_link = 'https://stg-lead.cmsedu.vn/#/single-sign-on/';
+            }
             $data = (object)array(
                 'status'=>1,
                 'message'=>'',
-                'link_redirect'=>"http://crm.cltechpro.com/#/single-sign-on/".$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+                'link_redirect'=>$tmp_link.$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
             );
         }else{
             $data = (object)array(
