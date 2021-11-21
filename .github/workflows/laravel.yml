@@ -7,7 +7,7 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  cms_leads_production:
+  cms_account_production:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/master'
     steps:
@@ -29,7 +29,7 @@ jobs:
     - name: Complete
       run: npm run dev
       working-directory: /opt/cms_account
-  cms_leads_develop:
+  cms_account_develop:
     runs-on: self-hosted
     if: github.ref == 'refs/heads/develop'
     steps:
