@@ -81,7 +81,7 @@
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-phone-volume"></i></div>
                       <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
-                        >CHĂM SÓC KHÁCH HÀNG</small
+                        >C-CALL</small
                       >
                     </div>
                   </div>
