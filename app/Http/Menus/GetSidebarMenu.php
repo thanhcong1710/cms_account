@@ -36,6 +36,10 @@ class GetSidebarMenu implements MenuInterface{
         $this->getMenuFromDB($menuName, 'user');
     }
 
+    private function getHRMenu($menuName){
+        $this->getMenuFromDB($menuName, 'HR');
+    }
+
     private function getAdminMenu($menuName){
         $this->getMenuFromDB($menuName, 'admin');
     }
@@ -46,6 +50,8 @@ class GetSidebarMenu implements MenuInterface{
             $this->getGuestMenu($menuName);
         }elseif(in_array('admin', $roles)){
             $this->getAdminMenu($menuName);
+        }elseif(in_array('HR', $roles)){
+            $this->getHRMenu($menuName);
         }elseif(in_array('user', $roles)){
             $this->getUserMenu($menuName);
         }else{
