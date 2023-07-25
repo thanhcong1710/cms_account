@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="col-sm-6 col-md-4">
-                  <div class="card text-white bg-gradient-success box-switch"  @click="loginLeads">
+                  <div class="card text-white bg-gradient-success box-switch"  @click="loginLeads(0)">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-phone-volume"></i></div>
                       <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
@@ -98,6 +98,16 @@
                     </div>
                   </div>
                   </router-link>
+                </div>
+                <div class="col-sm-6 col-md-4"> 
+                  <div class="card text-white bg-gradient-warning box-switch"  @click="loginLeads(1)">
+                    <div class="card-body">
+                      <div class="text-value-lg" style="font-size:38px"><i class="fas fa-camera"></i></div>
+                      <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
+                        >CAMERA AI</small
+                      >
+                    </div>
+                  </div>
                 </div>
                 <p style="color:red;text-align: center;width:100%" v-html="message_error"></p>
               </div>
@@ -147,9 +157,9 @@ export default {
           u.processAuthen(e);
         });
     },
-    loginLeads(){
+    loginLeads(type){
       this.loading.processing = true;
-      u.g("/api/users/login/leads")
+      u.g("/api/users/login/leads?type="+type)
         .then((response) => {
           if (response.data.status == 1) {
             window.location.href =  response.data.link_redirect;
