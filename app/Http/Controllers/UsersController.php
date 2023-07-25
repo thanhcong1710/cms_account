@@ -226,7 +226,7 @@ class UsersController extends Controller
             $data = (object)array(
                 'status'=>1,
                 'message'=>'',
-                'link_redirect'=>$tmp_link.$user_info->hrm_id."/".md5($key.$user_info->hrm_id)."?type=".$request->type
+                'link_redirect'=>$tmp_link.$user_info->hrm_id."/".md5($key.$user_info->hrm_id)."/".$request->type
             );
         }else{
             $data = (object)array(
