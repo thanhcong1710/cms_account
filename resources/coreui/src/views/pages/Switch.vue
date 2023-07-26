@@ -99,7 +99,7 @@
                   </div>
                   </router-link>
                 </div>
-                <div class="col-sm-6 col-md-4"> 
+                <div class="col-sm-6 col-md-4" v-if="roleCameraAI != -1"> 
                   <div class="card text-white bg-gradient-warning box-switch"  @click="loginLeads(1)">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-camera"></i></div>
@@ -130,6 +130,7 @@ export default {
   },
   data() {
     return {
+      roleCameraAI: false,
       email: "",
       password: "",
       showMessage: false,
@@ -140,6 +141,9 @@ export default {
       },
       message_error:"",
     };   
+  },
+  created() {
+    this.roleCameraAI = localStorage.getItem("roles").indexOf("admin")
   },
   methods: {
     loginCRM() {
