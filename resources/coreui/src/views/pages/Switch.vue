@@ -144,7 +144,7 @@ export default {
     };   
   },
   created() {
-    this.roleCameraAI = localStorage.getItem("roles").indexOf("CM")!= -1 || localStorage.getItem("roles").indexOf("amin")!= -1 ? true :false
+    this.roleCameraAI = localStorage.getItem("roles").indexOf("CM")!= -1 || localStorage.getItem("roles").indexOf("admin")!= -1 ? true :false
     this.roleCCall = localStorage.getItem("roles").indexOf("CM")== -1 ? true :false
   },
   methods: {
