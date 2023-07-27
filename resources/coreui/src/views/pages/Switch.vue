@@ -76,7 +76,7 @@
                   </div>
                 </div>
 
-                <div class="col-sm-6 col-md-4" v-if="roleCCall == -1">
+                <div class="col-sm-6 col-md-4" v-if="roleCCall">
                   <div class="card text-white bg-gradient-success box-switch"  @click="loginLeads(0)">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-phone-volume"></i></div>
@@ -99,7 +99,7 @@
                   </div>
                   </router-link>
                 </div>
-                <div class="col-sm-6 col-md-4" v-if="roleCameraAI != -1"> 
+                <div class="col-sm-6 col-md-4" v-if="roleCameraAI"> 
                   <div class="card text-white bg-gradient-warning box-switch"  @click="loginLeads(1)">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-camera"></i></div>
@@ -130,8 +130,8 @@ export default {
   },
   data() {
     return {
-      roleCameraAI: '',
-      roleCCall:'',
+      roleCameraAI: false,
+      roleCCall: false,
       email: "",
       password: "",
       showMessage: false,
@@ -144,8 +144,8 @@ export default {
     };   
   },
   created() {
-    this.roleCameraAI = localStorage.getItem("roles").indexOf("admin,CM")
-    this.roleCCall = localStorage.getItem("roles").indexOf("CM")
+    this.roleCameraAI = localStorage.getItem("roles").indexOf("CM")!= -1 || localStorage.getItem("roles").indexOf("amin")!= -1 ? true :false
+    this.roleCCall = localStorage.getItem("roles").indexOf("CM")== -1 ? true :false
   },
   methods: {
     loginCRM() {
