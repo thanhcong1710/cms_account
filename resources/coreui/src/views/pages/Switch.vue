@@ -76,7 +76,7 @@
                   </div>
                 </div>
 
-                <div class="col-sm-6 col-md-4">
+                <div class="col-sm-6 col-md-4" v-if="roleCCall == -1">
                   <div class="card text-white bg-gradient-success box-switch"  @click="loginLeads(0)">
                     <div class="card-body">
                       <div class="text-value-lg" style="font-size:38px"><i class="fas fa-phone-volume"></i></div>
@@ -130,7 +130,8 @@ export default {
   },
   data() {
     return {
-      roleCameraAI: false,
+      roleCameraAI: '',
+      roleCCall:'',
       email: "",
       password: "",
       showMessage: false,
@@ -143,7 +144,8 @@ export default {
     };   
   },
   created() {
-    this.roleCameraAI = localStorage.getItem("roles").indexOf("admin")
+    this.roleCameraAI = localStorage.getItem("roles").indexOf("admin,CM")
+    this.roleCCall = localStorage.getItem("roles").indexOf("CM")
   },
   methods: {
     loginCRM() {
