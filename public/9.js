@@ -267,7 +267,7 @@ var render = function() {
                   _c(
                     "CCardBody",
                     [
-                      _c("h4", [_vm._v("Roles")]),
+                      _c("h4", [_vm._v("DS Roles")]),
                       _vm._v(" "),
                       _c(
                         "CButton",

@@ -124,6 +124,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -134,6 +144,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      roleCameraAI: false,
+      roleCCall: false,
       email: "",
       password: "",
       showMessage: false,
@@ -144,6 +156,10 @@ __webpack_require__.r(__webpack_exports__);
       },
       message_error: ""
     };
+  },
+  created: function created() {
+    this.roleCameraAI = localStorage.getItem("roles").indexOf("CM") != -1 || localStorage.getItem("roles").indexOf("admin") != -1 ? true : false;
+    this.roleCCall = localStorage.getItem("roles").indexOf("CM") == -1 ? true : false;
   },
   methods: {
     loginCRM: function loginCRM() {
@@ -161,11 +177,11 @@ __webpack_require__.r(__webpack_exports__);
         _utilities_utility__WEBPACK_IMPORTED_MODULE_1__["default"].processAuthen(e);
       });
     },
-    loginLeads: function loginLeads() {
+    loginLeads: function loginLeads(type) {
       var _this2 = this;
 
       this.loading.processing = true;
-      _utilities_utility__WEBPACK_IMPORTED_MODULE_1__["default"].g("/api/users/login/leads").then(function (response) {
+      _utilities_utility__WEBPACK_IMPORTED_MODULE_1__["default"].g("/api/users/login/leads?type=" + type).then(function (response) {
         if (response.data.status == 1) {
           window.location.href = response.data.link_redirect;
         } else {
@@ -379,42 +395,48 @@ var render = function() {
                             )
                           ]),
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-sm-6 col-md-4" }, [
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "card text-white bg-gradient-success box-switch",
-                                on: { click: _vm.loginLeads }
-                              },
-                              [
-                                _c("div", { staticClass: "card-body" }, [
-                                  _c(
-                                    "div",
-                                    {
-                                      staticClass: "text-value-lg",
-                                      staticStyle: { "font-size": "38px" }
-                                    },
-                                    [
-                                      _c("i", {
-                                        staticClass: "fas fa-phone-volume"
-                                      })
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "small",
-                                    {
-                                      staticClass:
-                                        "text-muted text-uppercase font-weight-bold",
-                                      staticStyle: { "font-size": "16px" }
-                                    },
-                                    [_vm._v("CHĂM SÓC KHÁCH HÀNG")]
-                                  )
-                                ])
-                              ]
-                            )
-                          ]),
+                          _vm.roleCCall
+                            ? _c("div", { staticClass: "col-sm-6 col-md-4" }, [
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "card text-white bg-gradient-success box-switch",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.loginLeads(0)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("div", { staticClass: "card-body" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass: "text-value-lg",
+                                          staticStyle: { "font-size": "38px" }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-phone-volume"
+                                          })
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "small",
+                                        {
+                                          staticClass:
+                                            "text-muted text-uppercase font-weight-bold",
+                                          staticStyle: { "font-size": "16px" }
+                                        },
+                                        [_vm._v("C-CALL")]
+                                      )
+                                    ])
+                                  ]
+                                )
+                              ])
+                            : _vm._e(),
                           _vm._v(" "),
                           _c(
                             "div",
@@ -462,6 +484,49 @@ var render = function() {
                             ],
                             1
                           ),
+                          _vm._v(" "),
+                          _vm.roleCameraAI
+                            ? _c("div", { staticClass: "col-sm-6 col-md-4" }, [
+                                _c(
+                                  "div",
+                                  {
+                                    staticClass:
+                                      "card text-white bg-gradient-warning box-switch",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.loginLeads(1)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("div", { staticClass: "card-body" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass: "text-value-lg",
+                                          staticStyle: { "font-size": "38px" }
+                                        },
+                                        [
+                                          _c("i", {
+                                            staticClass: "fas fa-camera"
+                                          })
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "small",
+                                        {
+                                          staticClass:
+                                            "text-muted text-uppercase font-weight-bold",
+                                          staticStyle: { "font-size": "16px" }
+                                        },
+                                        [_vm._v("CAMERA AI")]
+                                      )
+                                    ])
+                                  ]
+                                )
+                              ])
+                            : _vm._e(),
                           _vm._v(" "),
                           _c("p", {
                             staticStyle: {

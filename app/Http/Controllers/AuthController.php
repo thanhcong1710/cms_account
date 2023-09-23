@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Providers\UtilityServiceProvider as u;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -54,18 +55,29 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $sip_id = $request->sip_id;
+        $connection = DB::connection('mysql_lead');
+        if($sip_id){
+            $sip_info = $connection->select(DB::raw("SELECT u.name, u.hrm_id FROM users AS u WHERE sip_id=".$sip_id));
+            $sip_info = isset($sip_info[0])? $sip_info[0] : null;
+            if($sip_info && $sip_info->hrm_id!= $request->hrm_id){
+                return response()->json(['error' => 'Unauthorized','message'=>'Đầu số đã được nhân viên '. $sip_info->name.' - '. $sip_info->hrm_id.' sử dụng'], 401);
+            }
+        }
         $credentials = request(['hrm_id', 'password']);
         $user_info = u::getObject(['hrm_id'=>$credentials['hrm_id']],'users');
         if($user_info){
             $credentials['email'] = $user_info->email;
             if (! $token = auth()->attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'Unauthorized', 'message'=>'Incorrect E-mail or password'], 401);
             }
         }else{
             if (! $token = auth()->attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'Unauthorized',  'message'=>'Incorrect E-mail or password'], 401);
             }
         }
+
+        $connection->query(DB::raw("UPDATE users SET sip_id='".($sip_id ? $sip_id : null)." WHERE hrm_id=".$sip_info->hrm_id));
 
         return $this->respondWithToken($token, $user_info->email);
     }

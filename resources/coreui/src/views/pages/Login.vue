@@ -61,6 +61,16 @@
                 >
                   <template #prepend-content><CIcon name="cil-lock-locked"/></template>
                 </CInput>
+                <div role="group" class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="fa fa-phone"></i>
+                      </span>
+                    </div>
+                    <input type="text" v-model="sip_id" placeholder="Đầu số điện thoại" class="form-control">
+                  </div>
+                </div>
                 <CRow>
                   <CCol col="6" class="text-left">
                     <CButton type="submit" color="primary" class="px-4">Login</CButton>
@@ -89,6 +99,7 @@ import axios from "axios";
         return {
           hrm_id: '',
           password: '',
+          sip_id:'',
           showMessage: false,
           message: '',
         }
@@ -102,6 +113,7 @@ import axios from "axios";
           axios.post(  '/api/login', {
             hrm_id: self.hrm_id,
             password: self.password,
+            sip_id:self.sip_id
           }).then(function (response) {
             self.hrm_id = '';
             self.password = '';

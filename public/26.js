@@ -92,6 +92,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'Login',
@@ -99,6 +109,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       hrm_id: '',
       password: '',
+      sip_id: '',
       showMessage: false,
       message: ''
     };
@@ -113,7 +124,8 @@ __webpack_require__.r(__webpack_exports__);
       var self = this;
       axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/api/login', {
         hrm_id: self.hrm_id,
-        password: self.password
+        password: self.password,
+        sip_id: self.sip_id
       }).then(function (response) {
         self.hrm_id = '';
         self.password = '';
@@ -325,6 +337,58 @@ var render = function() {
                                   expression: "password"
                                 }
                               }),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "form-group",
+                                  attrs: { role: "group" }
+                                },
+                                [
+                                  _c("div", { staticClass: "input-group" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "input-group-prepend" },
+                                      [
+                                        _c(
+                                          "span",
+                                          { staticClass: "input-group-text" },
+                                          [
+                                            _c("i", {
+                                              staticClass: "fa fa-phone"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c("input", {
+                                      directives: [
+                                        {
+                                          name: "model",
+                                          rawName: "v-model",
+                                          value: _vm.sip_id,
+                                          expression: "sip_id"
+                                        }
+                                      ],
+                                      staticClass: "form-control",
+                                      attrs: {
+                                        type: "text",
+                                        placeholder: "Đầu số điện thoại"
+                                      },
+                                      domProps: { value: _vm.sip_id },
+                                      on: {
+                                        input: function($event) {
+                                          if ($event.target.composing) {
+                                            return
+                                          }
+                                          _vm.sip_id = $event.target.value
+                                        }
+                                      }
+                                    })
+                                  ])
+                                ]
+                              ),
                               _vm._v(" "),
                               _c(
                                 "CRow",
