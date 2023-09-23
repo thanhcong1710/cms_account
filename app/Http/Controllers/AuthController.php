@@ -77,7 +77,7 @@ class AuthController extends Controller
             }
         }
 
-        $connection->query(DB::raw("UPDATE users SET sip_id='".($sip_id ? $sip_id : null)." WHERE hrm_id=".$sip_info->hrm_id));
+        $connection->query(DB::raw("UPDATE users SET sip_id='".($sip_id ? $sip_id : null)." WHERE hrm_id=".$request->hrm_id));
 
         return $this->respondWithToken($token, $user_info->email);
     }
