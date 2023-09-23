@@ -125,7 +125,7 @@ import axios from "axios";
               self.$router.push({ path: '/switch' });
             }
           })
-          .catch(function (error) {
+          .catch(error => {
             self.message = error.message;
             self.showMessage = true;
             console.log(error);
