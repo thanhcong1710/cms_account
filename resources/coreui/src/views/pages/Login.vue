@@ -125,12 +125,15 @@ import axios from "axios";
               self.$router.push({ path: '/switch' });
             }
           })
-          .catch(error => {
-            self.message = error.message;
-            self.showMessage = true;
-            console.log(error);
-          });
-  
+          .catch(function (error) {
+            if (error.response) {
+              console.log(error.response.data);
+              console.log(error.response.status);
+              console.log(error.response.headers);
+              self.message = error.response.data.message;
+              self.showMessage = true;
+            }
+          })
         }
       }
     }
