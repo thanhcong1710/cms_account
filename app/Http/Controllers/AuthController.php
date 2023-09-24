@@ -57,13 +57,13 @@ class AuthController extends Controller
     {
         $sip_id = $request->sip_id;
         $connection = DB::connection('mysql_lead');
-        if($sip_id){
-            $sip_info = $connection->select(DB::raw("SELECT u.name, u.hrm_id FROM users AS u WHERE sip_id=".$sip_id));
-            $sip_info = isset($sip_info[0])? $sip_info[0] : null;
-            if($sip_info && $sip_info->hrm_id!= $request->hrm_id){
-                return response()->json(['error' => 'Unauthorized','message'=>'Đầu số đã được nhân viên '. $sip_info->name.' - '. $sip_info->hrm_id.' sử dụng'], 401);
-            }
-        }
+        // if($sip_id){
+        //     $sip_info = $connection->select(DB::raw("SELECT u.name, u.hrm_id FROM users AS u WHERE sip_id=".$sip_id));
+        //     $sip_info = isset($sip_info[0])? $sip_info[0] : null;
+        //     if($sip_info && $sip_info->hrm_id!= $request->hrm_id){
+        //         return response()->json(['error' => 'Unauthorized','message'=>'Đầu số đã được nhân viên '. $sip_info->name.' - '. $sip_info->hrm_id.' sử dụng'], 401);
+        //     }
+        // }
         $credentials = request(['hrm_id', 'password']);
         $user_info = u::getObject(['hrm_id'=>$credentials['hrm_id']],'users');
         if($user_info){
