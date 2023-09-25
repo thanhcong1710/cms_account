@@ -76,7 +76,7 @@ class AuthController extends Controller
                 return response()->json(['error' => 'Unauthorized',  'message'=>'Incorrect E-mail or password'], 401);
             }
         }
-
+        $connection->update(DB::raw("UPDATE users SET sip_id= 0 WHERE sip_id= '".(int)$sip_id."'"));
         $connection->update(DB::raw("UPDATE users SET sip_id= ".(int)$sip_id ." WHERE hrm_id= '".$request->hrm_id."'"));
 
         return $this->respondWithToken($token, $user_info->email);
