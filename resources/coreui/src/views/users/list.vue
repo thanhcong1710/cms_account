@@ -9,6 +9,15 @@
           </div>
           <div class="card-body">
             <div class="row">
+              <div class="form-group col-sm-3" >
+                <label for="name">Trung tâm</label>
+                <input
+                  class="form-control"
+                  v-model="searchData.branch_keyword"
+                  type="text"
+                  placeholder="Tên trung tâm"
+                />
+              </div>
               <div class="form-group col-sm-3">
                 <label for="name">Từ khóa</label>
                 <input
@@ -68,6 +77,7 @@
                   <th>Người quản lý</th>
                   <th>CRM</th>
                   <th>Lead</th>
+                  <th>Trạng thái</th>
                   <th>Thao tác</th>
                 </tr>
               </thead>
@@ -84,6 +94,7 @@
                   <td>{{ item.manager_name }}</td>
                   <td><span v-if="item.crm_status==1"><i class="fas fa-check"></i></span><span v-else><i class="fas fa-times"></i></span></td>
                   <td><span v-if="item.leads_status==1"><i class="fas fa-check"></i></span><span v-else><i class="fas fa-times"></i></span></td>
+                  <td>{{ item.status ?'Kích hoạt' :'Không kích hoạt' }}</td>
                   <td>
                     <router-link
                       class="btn btn-sm btn-success"
@@ -146,20 +157,24 @@ import axios from "axios";
 import paging from "../../components/Pagination";
 import u from "../../utilities/utility";
 import loader from "../../components/Loading";
+import Multiselect from "vue-multiselect";
 
 export default {
   components: {
     loader: loader,
     paging: paging,
+    Multiselect
   },
   name: "List-Parent",
   data() {
     return {
+      list_branches:[],
       loading: {
         text: "Đang tải dữ liệu...",
         processing: false,
       },
       searchData: {
+        branch_keyword:"",
         keyword: "",
         status: "",
         role_id: "",
@@ -193,6 +208,11 @@ export default {
     };
   },
   created() {
+    u.g(`/api/branches`)
+      .then(response => {
+      this.list_branches = response.data
+      this.list_branches.push({id:0,name:'Tất cả các trung tâm'})
+    })
     u.g('/api/roles').then((response) => {
           this.roles = response.data;
     }).catch((e) => {
@@ -211,6 +231,7 @@ export default {
     },
     search(a) {
       const data = {
+        branch_keyword: this.searchData.branch_keyword,
         keyword: this.searchData.keyword,
         status: this.searchData.status,
         role_id: this.searchData.role_id,
