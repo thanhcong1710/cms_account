@@ -208,11 +208,6 @@ export default {
     };
   },
   created() {
-    u.g(`/api/branches`)
-      .then(response => {
-      this.list_branches = response.data
-      this.list_branches.push({id:0,name:'Tất cả các trung tâm'})
-    })
     u.g('/api/roles').then((response) => {
           this.roles = response.data;
     }).catch((e) => {
