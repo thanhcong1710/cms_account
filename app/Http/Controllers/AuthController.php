@@ -65,7 +65,7 @@ class AuthController extends Controller
         //     }
         // }
         $credentials = request(['hrm_id', 'password']);
-        $user_info = u::getObject(['hrm_id'=>$credentials['hrm_id']],'users');
+        $user_info = u::getObject(['hrm_id'=>$credentials['hrm_id'],'status'=>1],'users');
         if($user_info){
             $credentials['email'] = $user_info->email;
             if (! $token = auth()->attempt($credentials)) {
