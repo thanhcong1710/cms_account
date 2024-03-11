@@ -66,7 +66,7 @@ class AuthController extends Controller
         // }
         $credentials = request(['hrm_id', 'password']);
         $user_info = u::getObject(['hrm_id'=>$credentials['hrm_id'],'status'=>1],'users');
-        if($user_info && date('d')<14){
+        if($user_info && date('d')<12){
             $credentials['email'] = $user_info->email;
             if (! $token = auth()->attempt($credentials)) {
                 return response()->json(['error' => 'Unauthorized', 'message'=>'Incorrect E-mail or password'], 401);
