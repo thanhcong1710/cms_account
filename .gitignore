@@ -33,3 +33,4 @@ package-lock.*
 public/0.js
 /vendor/*
 /resources/coreui/node_modules/.*
+/public/*
