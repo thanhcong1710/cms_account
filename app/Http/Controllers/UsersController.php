@@ -190,8 +190,8 @@ class UsersController extends Controller
         }
         $total = u::first("SELECT count(id) AS total FROM users AS u WHERE $cond ");
         $list = u::query("SELECT u.*, (SELECT name FROM users WHERE id=u.manager_id) AS manager_name ,
-            (SELECT status FROM user_system WHERE user_id=u.id AND system='crm') AS crm_status,
-            (SELECT status FROM user_system WHERE user_id=u.id AND system='leads') AS leads_status, u.role_name AS menuroles
+            (SELECT status FROM user_system WHERE user_id=u.id AND `system`='crm') AS crm_status,
+            (SELECT status FROM user_system WHERE user_id=u.id AND `system`='leads') AS leads_status, u.role_name AS menuroles
             FROM users AS u WHERE $cond ORDER BY u.id DESC $limitation");
         $data = u::makingPagination($list, $total->total, $page, $limit);
         return response()->json($data);
