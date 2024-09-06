@@ -13,10 +13,10 @@ jobs:
     steps:
     - name: Pull
       run: git pull origin master
-      working-directory: /var/www/cms_account
+      working-directory: /var/www/account_cms
     - name: Build Node
       run: npm run build
-      working-directory: /var/www/cms_account/resources/coreui
+      working-directory: /var/www/account_cms/resources/coreui
     - name: Complete
       run: npm run dev
-      working-directory: /var/www/cms_account
+      working-directory: /var/www/account_cms
