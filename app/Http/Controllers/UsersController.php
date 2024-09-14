@@ -312,7 +312,7 @@ class UsersController extends Controller
 
             $list_users = u::query("SELECT u.id FROM users AS u LEFT JOIN user_system AS m ON u.id=m.user_id WHERE m.id IS NULL");
             if(!empty($list_users)){
-                $sql_insert_user_system = "INSERT INTO user_system (user_id,system,status) VALUES ";
+                $sql_insert_user_system = "INSERT INTO user_system (user_id,`system`,status) VALUES ";
                 foreach($list_users AS $row){
                     $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),";
                 }
