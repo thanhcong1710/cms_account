@@ -78,7 +78,8 @@ return [
         ],
         'mysql_crm' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', '127.0.0.1'),
+            // 'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => '103.226.249.104',
             'port' => env('DB_PORT', '3306'),
             'database' => 'cms_crm',
             'username' =>  env('DB_USERNAME', 'forge'),
@@ -94,7 +95,8 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
+            // 'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => '103.226.249.104',
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
