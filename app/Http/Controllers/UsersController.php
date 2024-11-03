@@ -201,9 +201,9 @@ class UsersController extends Controller
         $key ="CMS@abcd1234";
         if($user_info){
             if(env('APP_ENV', 'staging')=='production'){
-                $tmp_link = 'https://crm.cmsedu.vn/single-sign-on/';
+                $tmp_link = 'https://crm.logiclab.vn/single-sign-on/';
             }else{
-                $tmp_link = 'https://staging.cmsedu.vn/single-sign-on/';
+                $tmp_link = 'https://staging.logiclab.vn/single-sign-on/';
             }
             $data = (object)array(
                 'status'=>1,
@@ -223,9 +223,9 @@ class UsersController extends Controller
         $key ="CMS@abcd1234";
         if($user_info){
             if(env('APP_ENV', 'staging')=='production'){
-                $tmp_link = 'https://lead.cmsedu.vn/#/single-sign-on/';
+                $tmp_link = 'https://lead.logiclab.vn/#/single-sign-on/';
             }else{
-                $tmp_link = 'https://stg-lead.cmsedu.vn/#/single-sign-on/';
+                $tmp_link = 'https://stg-lead.logiclab.vn/#/single-sign-on/';
             }
             $data = (object)array(
                 'status'=>1,
