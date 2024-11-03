@@ -64,8 +64,7 @@ return [
         ],
         'mysql_lead' => [
             'driver' => 'mysql',
-            // 'host' => env('DB_HOST', '127.0.0.1'),
-            'host' => '103.226.249.104',
+            'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => 'cms_lead',
             'username' =>  env('DB_USERNAME', 'forge'),
@@ -79,8 +78,7 @@ return [
         ],
         'mysql_crm' => [
             'driver' => 'mysql',
-            // 'host' => env('DB_HOST', '127.0.0.1'),
-            'host' => '103.226.249.104',
+            'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => 'cms_crm',
             'username' =>  env('DB_USERNAME', 'forge'),
