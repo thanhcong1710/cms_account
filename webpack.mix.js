@@ -25,9 +25,9 @@ mix.webpackConfig({
  |
  */
 
-mix.js('resources/js/app.js', path.resolve(__dirname, '/../js'))
-   .sass('resources/sass/app.scss', path.resolve(__dirname, '/../css'));
+mix.js('resources/js/app.js', path.resolve(__dirname, '/home/account/public_html/js'))
+   .sass('resources/sass/app.scss', path.resolve(__dirname, '/home/account/public_html/css'));
 
-mix.copy('resources/coreui/public', path.resolve(__dirname, '/../'));
+mix.copy('resources/coreui/public', path.resolve(__dirname, '/home/account/public_html'));
 
 
