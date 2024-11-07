@@ -6,8 +6,7 @@
           <CCard class="mx-4 mb-0">
             <CCardBody class="p-4">
               <CForm @submit.prevent="login" method="POST">
-                <img src="img/logo_scots.png" class="c-avatar-img " />
-                <h1>Login</h1>
+                <img src="img/logo_scots.png" class="c-avatar-img " style="margin-bottom: 20px;max-width: 180px"/>
                 <p class="text-muted">Sign In to your account</p>
                 <CInput
                   v-model="hrm_id"
