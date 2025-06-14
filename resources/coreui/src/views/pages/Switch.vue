@@ -6,7 +6,7 @@
         <CCol md="6">
           <CCard class="mx-4 mb-0">
             <CCardBody class="p-4">
-              <img src="img/logo.png"/>
+              <img style="max-width: 246px" src="/static/logo.png"/>
               <h1 style="padding: 20px">CHỌN HỆ THỐNG</h1>
               <div class="row">
                 <div class="col-sm-6 col-md-4">
