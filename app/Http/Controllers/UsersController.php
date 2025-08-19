@@ -200,10 +200,10 @@ class UsersController extends Controller
         $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='crm' AND s.status=1 AND s.user_id=".$request->user()->id);
         $key ="CMS@abcd1234";
         if($user_info){
-            if(env('APP_ENV', 'staging')=='production'){
+            if(env('APP_ENV')=='production'){
                 $tmp_link = 'https://crm.logiclab.vn/single-sign-on/';
             }else{
-                $tmp_link = 'https://staging.logiclab.vn/single-sign-on/';
+                $tmp_link = 'https://dev-crm.logiclab.vn/single-sign-on/';
             }
             $data = (object)array(
                 'status'=>1,
@@ -222,10 +222,10 @@ class UsersController extends Controller
         $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system='leads' AND s.status=1 AND s.user_id=".$request->user()->id);
         $key ="CMS@abcd1234";
         if($user_info){
-            if(env('APP_ENV', 'staging')=='production'){
+            if(env('APP_ENV')=='production'){
                 $tmp_link = 'https://lead.logiclab.vn/#/single-sign-on/';
             }else{
-                $tmp_link = 'https://stg-lead.logiclab.vn/#/single-sign-on/';
+                $tmp_link = 'https://dev-lead.logiclab.vn/#/single-sign-on/';
             }
             $data = (object)array(
                 'status'=>1,
