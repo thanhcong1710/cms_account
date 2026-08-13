@@ -53,6 +53,17 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="col-sm-6 col-md-4" v-if="roleLMS"> 
+                  <div class="card text-white bg-gradient-info box-switch" @click="loginLMS">
+                    <div class="card-body">
+                      <div class="text-value-lg" style="font-size:38px"><i class="fas fa-graduation-cap"></i></div>
+                      <small style="font-size:16px" class="text-muted text-uppercase font-weight-bold"
+                        >HỆ THỐNG LMS</small
+                      >
+                    </div>
+                  </div>
+                </div>
                 <p style="color:red;text-align: center;width:100%" v-html="message_error"></p>
               </div>
             </CCardBody>
@@ -74,6 +85,7 @@ export default {
   },
   data() {
     return {
+      roleLMS: false,
       roleCameraAI: false,
       roleCCall: false,
       email: "",
@@ -88,6 +100,8 @@ export default {
     };   
   },
   created() {
+    const roles = localStorage.getItem("roles") || "";
+    this.roleLMS = roles.indexOf("admin") != -1 || roles.indexOf("teacher") != -1 || roles.indexOf("Giáo Viên") != -1 || roles.indexOf("Trưởng nhóm Giáo Viên") != -1;
     this.roleCameraAI = localStorage.getItem("roles").indexOf("CM")!= -1 || localStorage.getItem("roles").indexOf("admin")!= -1 ? true :false
     this.roleCCall = localStorage.getItem("roles").indexOf("CM")== -1 ? true :false
   },
@@ -116,6 +130,21 @@ export default {
           }else{
             this.loading.processing = false;
             this.message_error = response.data.message
+          }
+        })
+        .catch((e) => {
+          u.processAuthen(e);
+        });
+    },
+    loginLMS() {
+      this.loading.processing = true;
+      u.g("/api/users/login/lms")
+        .then((response) => {
+          if (response.data.status == 1) {
+            window.location.href = response.data.link_redirect;
+          } else {
+            this.loading.processing = false;
+            this.message_error = response.data.message;
           }
         })
         .catch((e) => {

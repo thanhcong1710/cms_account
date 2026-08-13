@@ -240,6 +240,36 @@ class UsersController extends Controller
         }
         return response()->json($data);
     }
+    public function loginLMS(Request $request){
+        $user_info = u::first("SELECT u.hrm_id FROM user_system AS s LEFT JOIN users AS u ON u.id=s.user_id WHERE s.system IN ('lms', 'teacher') AND s.status=1 AND s.user_id=".$request->user()->id);
+        if (!$user_info) {
+            $user_info = u::first("SELECT hrm_id FROM users WHERE status=1 AND (role_name LIKE '%admin%' OR role_name LIKE '%Giáo Viên%' OR role_name LIKE '%Giáo viên%' OR role_name LIKE '%Trưởng nhóm%') AND id=".$request->user()->id);
+        }
+        $key ="CMS@abcd1234";
+        if($user_info){
+            if(env('LMS_URL')){
+                $tmp_link = env('LMS_URL');
+            }elseif(env('APP_ENV')=='production'){
+                $tmp_link = 'https://lms.logiclab.vn/single-sign-on/';
+            }else{
+                $tmp_link = 'https://dev-lms.logiclab.vn/single-sign-on/';
+            }
+            if (substr($tmp_link, -1) !== '/') {
+                $tmp_link .= '/';
+            }
+            $data = (object)array(
+                'status'=>1,
+                'message'=>'',
+                'link_redirect'=>$tmp_link.$user_info->hrm_id."/".md5($key.$user_info->hrm_id)
+            );
+        }else{
+            $data = (object)array(
+                'status'=>0,
+                'message'=>'Bạn không có quyền truy cập hệ thống LMS',
+            );
+        }
+        return response()->json($data);
+    }
     public function getUserInfo(Request $request){
         $data = u::first("SELECT * FROM users WHERE id =".(int)$request->user()->id);
         return response()->json($data);
@@ -314,12 +344,13 @@ class UsersController extends Controller
             if(!empty($list_users)){
                 $sql_insert_user_system = "INSERT INTO user_system (user_id,`system`,status) VALUES ";
                 foreach($list_users AS $row){
-                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),";
+                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),('$row->id','lms',0),('$row->id','teacher',0),";
                 }
                 $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
                 u::query($sql_insert_user_system);
             }
         }
+
         u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
             LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) 
             SET s.status=t.status, u.name = t.name, u.phone=t.phone, u.email=t.email, u.manager_hrm_id =t.manager_hrm_id, u.branch_name = t.branch_name,u.role_name=t.role_name
@@ -364,7 +395,7 @@ class UsersController extends Controller
             if(!empty($list_users)){
                 $sql_insert_user_system = "INSERT INTO user_system (user_id,`system`,status) VALUES ";
                 foreach($list_users AS $row){
-                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),";
+                    $sql_insert_user_system.="('$row->id','crm',0),('$row->id','leads',0),('$row->id','lms',0),('$row->id','teacher',0),";
                 }
                 $sql_insert_user_system = substr($sql_insert_user_system, 0, -1);
                 u::query($sql_insert_user_system);
@@ -374,6 +405,25 @@ class UsersController extends Controller
         u::query("UPDATE user_system AS s LEFT JOIN users AS u ON u.id=s.user_id 
             LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
             WHERE t.id IS NOT NULL");
+
+        // Ensure user_system entries exist for lms and teacher
+        u::query("INSERT INTO user_system (user_id, `system`, status)
+            SELECT u.id, 'lms', 0 FROM users AS u
+            LEFT JOIN user_system AS s ON (s.user_id = u.id AND s.system = 'lms')
+            WHERE s.id IS NULL");
+
+        u::query("INSERT INTO user_system (user_id, `system`, status)
+            SELECT u.id, 'teacher', 0 FROM users AS u
+            LEFT JOIN user_system AS s ON (s.user_id = u.id AND s.system = 'teacher')
+            WHERE s.id IS NULL");
+
+        // Auto grant status=1 for lms and teacher systems if role_name contains Giáo Viên / Trưởng nhóm Giáo Viên
+        u::query("UPDATE user_system AS s 
+            LEFT JOIN users AS u ON u.id = s.user_id 
+            SET s.status = 1 
+            WHERE s.system IN ('lms', 'teacher') 
+              AND (u.role_name LIKE '%Giáo Viên%' OR u.role_name LIKE '%Giáo viên%' OR u.role_name LIKE '%Trưởng nhóm%')");
+
         u::updateSimpleRow(array('model_type'=>'App\User'),array('role_id'=>2),'model_has_roles');
         //update manager_id
         u::query("UPDATE users AS u LEFT JOIN users AS m ON m.hrm_id=u.manager_hrm_id SET u.manager_id=m.id");
