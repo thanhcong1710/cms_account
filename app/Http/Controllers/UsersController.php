@@ -406,6 +406,27 @@ class UsersController extends Controller
             LEFT JOIN tmp_users AS t ON (t.hrm_id=u.hrm_id AND t.type=s.system) SET s.status=t.status
             WHERE t.id IS NOT NULL");
 
+        // Ensure teacher role exists in roles table
+        $teacher_role = u::first("SELECT id FROM roles WHERE name='teacher'");
+        if (!$teacher_role) {
+            u::query("INSERT INTO roles (name, guard_name, created_at, updated_at) VALUES ('teacher', 'api', NOW(), NOW())");
+            $teacher_role = u::first("SELECT id FROM roles WHERE name='teacher'");
+        }
+
+        if ($teacher_role) {
+            // Assign teacher role in model_has_roles for existing & old users with teacher role_name
+            u::query("INSERT IGNORE INTO model_has_roles (role_id, model_type, model_id)
+                SELECT {$teacher_role->id}, 'App\\\\User', u.id FROM users AS u
+                LEFT JOIN model_has_roles AS m ON (m.model_id = u.id AND m.role_id = {$teacher_role->id})
+                WHERE m.model_id IS NULL 
+                  AND (u.role_name LIKE '%Giáo Viên%' OR u.role_name LIKE '%Giáo viên%' OR u.role_name LIKE '%Trưởng nhóm%' OR u.role_name LIKE '%Teacher%' OR u.role_name LIKE '%teacher%')");
+        }
+
+        // Update menuroles for teacher users
+        u::query("UPDATE users SET menuroles = 'teacher' 
+            WHERE (role_name LIKE '%Giáo Viên%' OR role_name LIKE '%Giáo viên%' OR role_name LIKE '%Trưởng nhóm%' OR role_name LIKE '%Teacher%' OR role_name LIKE '%teacher%')
+              AND (menuroles IS NULL OR menuroles = '' OR menuroles = 'user' OR menuroles = 'users')");
+
         // Ensure user_system entries exist for lms and teacher
         u::query("INSERT INTO user_system (user_id, `system`, status)
             SELECT u.id, 'lms', 0 FROM users AS u
@@ -417,12 +438,12 @@ class UsersController extends Controller
             LEFT JOIN user_system AS s ON (s.user_id = u.id AND s.system = 'teacher')
             WHERE s.id IS NULL");
 
-        // Auto grant status=1 for lms and teacher systems if role_name contains Giáo Viên / Trưởng nhóm Giáo Viên
+        // Auto grant status=1 for lms and teacher systems if role_name contains Giáo Viên / Trưởng nhóm Giáo Viên / teacher
         u::query("UPDATE user_system AS s 
             LEFT JOIN users AS u ON u.id = s.user_id 
             SET s.status = 1 
             WHERE s.system IN ('lms', 'teacher') 
-              AND (u.role_name LIKE '%Giáo Viên%' OR u.role_name LIKE '%Giáo viên%' OR u.role_name LIKE '%Trưởng nhóm%')");
+              AND (u.role_name LIKE '%Giáo Viên%' OR u.role_name LIKE '%Giáo viên%' OR u.role_name LIKE '%Trưởng nhóm%' OR u.role_name LIKE '%Teacher%' OR u.role_name LIKE '%teacher%')");
 
         u::updateSimpleRow(array('model_type'=>'App\User'),array('role_id'=>2),'model_has_roles');
         //update manager_id
